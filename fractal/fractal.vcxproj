@@ -130,7 +130,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fragmentShader.h" />
+    <ClInclude Include="fragmentShaderDouble.h" />
+    <ClInclude Include="fragmentShaderFloat.h" />
     <ClInclude Include="inits.h" />
     <ClInclude Include="vertexShader.h" />
   </ItemGroup>

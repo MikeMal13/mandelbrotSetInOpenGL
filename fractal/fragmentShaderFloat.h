@@ -2,7 +2,7 @@
 
 
 // Fragment Shader source code with calc function
-const char* fragmentShaderSource = R"(
+const char* fragmentShaderSourceFloat = R"(
     #version 450 core
 
     in vec2 fragPos; // Received from vertex shader
@@ -10,17 +10,15 @@ const char* fragmentShaderSource = R"(
     out vec4 FragColor;
 
     uniform float u_time; // Elapsed time in seconds
-    uniform dvec2 u_cursorPos;
-    uniform dvec4 u_windowSize;
+    uniform vec2 u_cursorPos;
+    uniform vec4 u_windowSize;
     
-    uniform double arr;
-
-    double minX, maxX, minY, maxY;
-    double mouseX, mouseY;
+    float minX, maxX, minY, maxY;
+    float mouseX, mouseY;
 
     struct complex {
-		double real;
-		double imag;
+		float real;
+		float imag;
 	};
     complex c, z;
 
@@ -66,7 +64,7 @@ const char* fragmentShaderSource = R"(
         return abs(z) / (MAX_DIST*MAX_DIST);
     }
     
-    void set_c_and_z(double x, double y){
+    void set_c_and_z(float x, float y){
         //c = complex((mouseX-0.5)*2, (mouseY-0.5)*2);
 		//z = complex(x, y);
         c = complex(x, y);
@@ -82,7 +80,7 @@ const char* fragmentShaderSource = R"(
         return (exp(val)-1)/(exp(1));
     }
     
-    vec3 calc(double x, double y, float t) {
+    vec3 calc(float x, float y, float t) {
         
         mouseX = float(u_cursorPos.x);
         mouseY = float(u_cursorPos.y);
@@ -111,7 +109,7 @@ const char* fragmentShaderSource = R"(
     void main()
     {
         // Compute color using the calc function
-        vec3 color = calc(double(fragPos.x), double(fragPos.y), u_time);
+        vec3 color = calc(fragPos.x, fragPos.y, u_time);
         FragColor = vec4(color, 1.0);
     }
 )";

@@ -8,13 +8,16 @@
 
 #include "inits.h"
 #include "vertexShader.h"
-#include "fragmentShader.h"
+#include "fragmentShaderDouble.h"
 
 #define min(a, b) (a < b ? a : b)
 #define max(a, b) (a > b ? a : b)
 
-typedef double big_float;
-
+#ifdef USE_FLOAT
+    typedef float big_float;
+#elif defined USE_DOUBLE
+    typedef double big_float;
+#endif
 
 big_float windowSize[] = { -2.0f, 2.0f, -2.0f, 2.0f };
 big_float currentTime;
@@ -134,6 +137,7 @@ void handleKeyPresses() {
 		windowSize[1] = 2.0f;
 		windowSize[2] = -2.0f;
 		windowSize[3] = 2.0f;
+        fitWindow();
 	}
 }
 
@@ -173,7 +177,7 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 }
 
 
-big_float xpos, ypos;
+double xpos, ypos;
 cord getMousePos() {
     glfwGetCursorPos(window, &xpos, &ypos);
 
@@ -237,10 +241,17 @@ int main()
         static cord mouseCord;
         if(!mousePosLocked) 
 			mouseCord = getMousePos();
+        
 
-        glUniform2d(mouseLocation, mouseCord.x, mouseCord.y);
+        #ifdef USE_FLOAT
+            glUniform2f(mouseLocation, mouseCord.x, mouseCord.y);
+            glUniform4fv(windowSizeLocation, 1, windowSize);
+        #elif defined USE_DOUBLE
+			glUniform2d(mouseLocation, mouseCord.x, mouseCord.y);
+			glUniform4dv(windowSizeLocation, 1, windowSize);
+        #endif
         glUniform1f(timeLocation, currentTime);
-        glUniform4dv(windowSizeLocation, 1, windowSize);
+
 
         // Rendering commands here
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Clear with dark gray color

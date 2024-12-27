@@ -1,11 +1,19 @@
 #pragma once
-#include "fragmentShader.h"
 #include "vertexShader.h"
 
 
 #define DEFAULT_WIDTH 800
 #define DEFAULT_HEIGHT 600
 
+// Uncomment one of the following lines to use float or double precision
+//#define USE_DOUBLE
+#define USE_FLOAT
+
+#ifdef USE_FLOAT
+    #include "fragmentShaderFloat.h";
+#elif defined USE_DOUBLE
+    #include "fragmentShaderDouble.h";
+#endif
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -80,7 +88,13 @@ void doStaff() {
 
     // b. Fragment Shader
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+
+#ifdef USE_FLOAT
+    glShaderSource(fragmentShader, 1, &fragmentShaderSourceFloat, NULL);
+#elif defined USE_DOUBLE
+    glShaderSource(fragmentShader, 1, &fragmentShaderSourceDouble, NULL);
+#endif
+
     glCompileShader(fragmentShader);
 
     // Check for fragment shader compile errors

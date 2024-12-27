@@ -26,7 +26,10 @@
     <ClInclude Include="vertexShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="fragmentShader.h">
+    <ClInclude Include="fragmentShaderDouble.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fragmentShaderFloat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
