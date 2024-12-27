@@ -10,12 +10,30 @@
 #include "vertexShader.h"
 #include "fragmentShader.h"
 
+#define min(a, b) (a < b ? a : b)
+#define max(a, b) (a > b ? a : b)
+
 typedef double big_float;
 
 
 big_float windowSize[] = { -2.0f, 2.0f, -2.0f, 2.0f };
 big_float currentTime;
 big_float deltaTime;
+
+struct cord {
+    big_float x;
+    big_float y;
+};
+cord getMousePos();
+
+big_float power2(big_float x) {
+	return x * x;
+}
+
+big_float dist(cord a, cord b) {
+    return sqrt(power2(a.x - b.x) + power2(a.y - b.y));
+}
+
 
 // mul is portsion of the window size moved every second
 void shiftWindowX(big_float mul) {
@@ -70,8 +88,9 @@ void fitWindow() {
 
 bool mousePosLocked = false;
 void handleKeyPresses() {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         shiftWindowY(-1.0); 
@@ -108,18 +127,55 @@ void handleKeyPresses() {
 	if(glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
 		mousePosLocked = false;
 	}
+
+    // reset window size
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+		windowSize[0] = -2.0f;
+		windowSize[1] = 2.0f;
+		windowSize[2] = -2.0f;
+		windowSize[3] = 2.0f;
+	}
+}
+
+cord convertToWindowCord(cord mouseCord) {
+	big_float range_x = windowSize[3] - windowSize[2];
+	big_float range_y = windowSize[1] - windowSize[0];
+
+	big_float x = windowSize[2] + range_x * mouseCord.x;
+	big_float y = windowSize[0] + range_y * mouseCord.y;
+
+	return { x, y };
+}
+
+// get called when mouse button is pressed
+cord mousePosOnClickStart;
+void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        //if (action == GLFW_PRESS) {
+		//	mousePosOnClickStart = getMousePos();
+        //}
+        //
+        //if (action == GLFW_RELEASE) {
+        //    cord mousePosOnClickEnd = getMousePos();
+        //    if(dist(mousePosOnClickStart, mousePosOnClickEnd) < 0.05) {
+        //        return;
+		//	}
+        //
+        //    mousePosOnClickStart = convertToWindowCord(mousePosOnClickStart);
+        //    mousePosOnClickEnd = convertToWindowCord(mousePosOnClickEnd);
+        //
+        //    windowSize[0] = min(mousePosOnClickStart.y, mousePosOnClickEnd.y);
+        //    windowSize[1] = max(mousePosOnClickStart.y, mousePosOnClickEnd.y);
+        //	windowSize[2] = min(mousePosOnClickStart.x, mousePosOnClickEnd.x);
+        //    windowSize[3] = max(mousePosOnClickStart.x, mousePosOnClickEnd.x);
+        //}
+    }
 }
 
 
-struct cord {
-    big_float x;
-    big_float y;
-};
-
 big_float xpos, ypos;
 cord getMousePos() {
-    if(!mousePosLocked) 
-        glfwGetCursorPos(window, &xpos, &ypos);
+    glfwGetCursorPos(window, &xpos, &ypos);
 
     // Get window size
     int width, height;
@@ -143,6 +199,8 @@ int main()
 {
     doStaff();
 
+    // Set the mouse button callback
+    glfwSetMouseButtonCallback(window, MouseButtonCallback);
 
     int timeLocation = glGetUniformLocation(shaderProgram, "u_time");
     int windowSizeLocation = glGetUniformLocation(shaderProgram, "u_windowSize");
@@ -169,12 +227,16 @@ int main()
         fitWindow();
         currentTime = getElapsedTime();
         deltaTime = currentTime - lastTime;
+        
 
         handleKeyPresses();
 
+
         glUseProgram(shaderProgram);
 
-        cord mouseCord = getMousePos();
+        static cord mouseCord;
+        if(!mousePosLocked) 
+			mouseCord = getMousePos();
 
         glUniform2d(mouseLocation, mouseCord.x, mouseCord.y);
         glUniform1f(timeLocation, currentTime);

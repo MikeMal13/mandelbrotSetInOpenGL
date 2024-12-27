@@ -52,8 +52,8 @@ const char* fragmentShaderSource = R"(
 		return _add(_mul(z, z), c);
 	}
     
-    #define MAX_DIST 3.0
-    #define MAX_ITER 30
+    #define MAX_DIST 10.0
+    #define MAX_ITER 100
     int steps = -1;
     float mandelbrot(complex c, complex z, int maxIter) {
 		int n = 0;
@@ -67,10 +67,10 @@ const char* fragmentShaderSource = R"(
     }
     
     void set_c_and_z(double x, double y){
-        c = complex((mouseX-0.5)*2, (mouseY-0.5)*2);
-		z = complex(x, y);
-        //c = complex(x, y);
-		//z = complex(0, 0);
+        //c = complex((mouseX-0.5)*2, (mouseY-0.5)*2);
+		//z = complex(x, y);
+        c = complex(x, y);
+		z = complex(0, 0);
     }
 
     float avg(complex c, complex z, int maxIter){
