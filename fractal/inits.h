@@ -1,13 +1,11 @@
 #pragma once
 #include "vertexShader.h"
-
+#include "SETTINGS.h"
 
 #define DEFAULT_WIDTH 800
 #define DEFAULT_HEIGHT 600
 
-// Uncomment one of the following lines to use float or double precision
-//#define USE_DOUBLE
-#define USE_FLOAT
+
 
 #ifdef USE_FLOAT
     #include "fragmentShaderFloat.h";

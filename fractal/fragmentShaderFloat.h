@@ -1,5 +1,5 @@
 #pragma once
-
+#include "SETTINGS.h"
 
 // Fragment Shader source code with calc function
 const char* fragmentShaderSourceFloat = R"(
@@ -50,8 +50,8 @@ const char* fragmentShaderSourceFloat = R"(
 		return _add(_mul(z, z), c);
 	}
     
-    #define MAX_DIST 10.0
-    #define MAX_ITER 100
+    #define MAX_DIST )" MAX_DIST R"(
+    #define MAX_ITER )" MAX_ITER R"(
     int steps = -1;
     float mandelbrot(complex c, complex z, int maxIter) {
 		int n = 0;
@@ -64,12 +64,7 @@ const char* fragmentShaderSourceFloat = R"(
         return abs(z) / (MAX_DIST*MAX_DIST);
     }
     
-    void set_c_and_z(float x, float y){
-        //c = complex((mouseX-0.5)*2, (mouseY-0.5)*2);
-		//z = complex(x, y);
-        c = complex(x, y);
-		z = complex(0, 0);
-    }
+    void set_c_and_z(float x, float y){ )" SET_TYPE R"( }
 
     float avg(complex c, complex z, int maxIter){
         return 1;    
@@ -95,11 +90,8 @@ const char* fragmentShaderSourceFloat = R"(
         
         set_c_and_z(x, y);
         
-        float value = mandelbrot(c, z, MAX_ITER);
-        float red = gra1(value) + steps / MAX_ITER;
-        float green = 0;
-        float blue = value;
-        
+        )" COLORING_SELECTED R"(        
+
         if(steps >= MAX_ITER)
            red = 0;
         

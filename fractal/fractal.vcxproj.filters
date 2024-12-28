@@ -32,5 +32,8 @@
     <ClInclude Include="fragmentShaderFloat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SETTINGS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

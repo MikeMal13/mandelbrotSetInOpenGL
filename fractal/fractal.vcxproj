@@ -133,6 +133,7 @@
     <ClInclude Include="fragmentShaderDouble.h" />
     <ClInclude Include="fragmentShaderFloat.h" />
     <ClInclude Include="inits.h" />
+    <ClInclude Include="SETTINGS.h" />
     <ClInclude Include="vertexShader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
