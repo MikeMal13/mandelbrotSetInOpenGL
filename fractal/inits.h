@@ -1,17 +1,15 @@
 #pragma once
 #include "vertexShader.h"
 #include "SETTINGS.h"
-
-#define DEFAULT_WIDTH 800
-#define DEFAULT_HEIGHT 600
-
-
-
 #ifdef USE_FLOAT
-    #include "fragmentShaderFloat.h";
+#include "fragmentShaderFloat.h";
 #elif defined USE_DOUBLE
-    #include "fragmentShaderDouble.h";
+#include "fragmentShaderDouble.h";
 #endif
+
+
+
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -52,7 +50,7 @@ void doStaff() {
     // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // 3. Create a GLFW window
-    window = glfwCreateWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, "OpenGL Dynamic Gradient", NULL, NULL);
+    window = glfwCreateWindow(SCREEN_DEFAULT_WIDTH, SCREEN_DEFAULT_HEIGHT, "OpenGL Dynamic Gradient", NULL, NULL);
     if (window == NULL) {
         std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
@@ -67,7 +65,7 @@ void doStaff() {
     }
 
     // 5. Set the viewport and register the resize callback
-    glViewport(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    glViewport(0, 0, SCREEN_DEFAULT_WIDTH, SCREEN_DEFAULT_HEIGHT);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // 6. Build and compile the shader program

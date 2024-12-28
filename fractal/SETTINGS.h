@@ -1,13 +1,19 @@
 #pragma once
 
-#define SET_TYPE SET_JULIA
-#define COLORING_SELECTED COLORING_STRIPS
+#define SET_TYPE SET_MANDELBROT
+#define COLORING_SELECTED COLORING_STRIPS_AND_EDGES
 
-//#define USE_DOUBLE
-#define USE_FLOAT
-#define MAX_ITER R"(10000)"
+// SELECT ONE (USE_FLOAT or USE_DOUBLE)
+//#define USE_FLOAT
+#define USE_DOUBLE
+#define MAX_ITER R"(1000)"
 #define MAX_DIST R"(10.0)"
 
+#define WINDOW_SHIFT_SPEED 0.25
+#define WINDOW_ZOOM_SPEED 1.5
+
+#define SCREEN_DEFAULT_WIDTH 200
+#define SCREEN_DEFAULT_HEIGHT 100
 
 
 #define SET_MANDELBROT R"(c = complex(x, y); z = complex(0, 0);)"
@@ -29,6 +35,6 @@ float blue = value;)"
 
 #define COLORING_STRIPS_AND_EDGES						\
 R"(float value = mandelbrot(c, z, MAX_ITER);			\
-float red = float(steps) / MAX_ITER;								\
-float green = 0;										\
+float red = float(steps) / 100;								\
+float green = 10;										\
 float blue = value;)"

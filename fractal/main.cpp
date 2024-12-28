@@ -9,6 +9,7 @@
 #include "inits.h"
 #include "vertexShader.h"
 #include "fragmentShaderDouble.h"
+#include "SETTINGS.h"
 
 #define min(a, b) (a < b ? a : b)
 #define max(a, b) (a > b ? a : b)
@@ -19,15 +20,20 @@
     typedef double big_float;
 #endif
 
-big_float windowSize[] = { -2.0f, 2.0f, -2.0f, 2.0f };
-big_float currentTime;
-big_float deltaTime;
-
 struct cord {
     big_float x;
     big_float y;
 };
+
+big_float windowSize[] = { -2.0f, 2.0f, -2.0f, 2.0f };
+big_float currentTime;
+big_float deltaTime;
+cord mouseCordIncludingLock;
+
+
 cord getMousePos();
+void printDataToUpload();
+void inputUploadData();
 
 big_float power2(big_float x) {
 	return x * x;
@@ -96,29 +102,29 @@ void handleKeyPresses() {
     }
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        shiftWindowY(-1.0); 
+        shiftWindowY(-WINDOW_SHIFT_SPEED);
     }
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        shiftWindowY(1.0);
+        shiftWindowY(WINDOW_SHIFT_SPEED);
     }
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        shiftWindowX(-1.0);
+        shiftWindowX(-WINDOW_SHIFT_SPEED);
     }
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        shiftWindowX(1.0);
+        shiftWindowX(WINDOW_SHIFT_SPEED);
     }
        
     // zoom in
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        zoomWindow(0.25);
+        zoomWindow(1/WINDOW_ZOOM_SPEED);
     }
 
     // zoom out
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        zoomWindow(4);
+        zoomWindow(WINDOW_ZOOM_SPEED);
     }
 
     //lock mouse position
@@ -139,6 +145,86 @@ void handleKeyPresses() {
 		windowSize[3] = 2.0f;
         fitWindow();
 	}
+
+
+    // SAVE window size and mouse location
+    if (glfwGetKey(window, GLFW_KEY_S)&&
+        (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) || glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS)) {
+        std::cout << "\n\nCOPY the following data and paste it after pressing CTRL+U on the next run\n";
+        std::cout << "keep in mind when switching from double to float the accuracy is much lower.\n";
+        printDataToUpload();
+        std::cout << "\n";
+    }
+
+
+    // UPLOAD window size and mouse location
+    if (glfwGetKey(window, GLFW_KEY_U) &&
+        (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) || glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS)) {
+        std::cout << "\n\nPASTE coped data (after CTRL+S)\n";
+        inputUploadData();
+        std::cout << "\n";
+    }
+}
+
+void printDataToUpload() {
+    #define big_float_size char
+#ifdef USE_FLOAT
+    #define big_float_size unsigned int 
+    std::cout << "F ";
+#elif defined USE_DOUBLE
+    #define big_float_size unsigned long long 
+    std::cout << "D ";
+#endif
+    std::cout << *((big_float_size*) &windowSize[0]) << " ";
+    std::cout << *((big_float_size*) &windowSize[1]) << " ";
+    std::cout << *((big_float_size*) &windowSize[2]) << " ";
+    std::cout << *((big_float_size*) &windowSize[3]) << " ";
+    std::cout << *((big_float_size*) &mouseCordIncludingLock.x) << " ";
+    std::cout << *((big_float_size*) &mouseCordIncludingLock.y) << " ";
+}
+
+void inputUploadData() {
+    mousePosLocked = true;
+
+    char oldType;
+    std::cin >> oldType;
+    if(oldType == 'F') {
+        unsigned int temp_arr[4], temp_mouse_x, temp_mouse_y;
+        float temp_arr2[4], temp_mouse_x2, temp_mouse_y2;
+        std::cin >> temp_arr[0] >> temp_arr[1] >> temp_arr[2] >> temp_arr[3] >> temp_mouse_x >> temp_mouse_y;
+        
+        temp_arr2[0] = *((big_float*)&temp_arr[0]);
+        temp_arr2[1] = *((big_float*)&temp_arr[1]);
+        temp_arr2[2] = *((big_float*)&temp_arr[2]);
+        temp_arr2[3] = *((big_float*)&temp_arr[3]);
+        temp_mouse_x2 = *((big_float*)&temp_mouse_x);
+        temp_mouse_y2 = *((big_float*)&temp_mouse_y);
+        
+        windowSize[0] = temp_arr2[0];
+        windowSize[1] = temp_arr2[1];
+        windowSize[2] = temp_arr2[2];
+		windowSize[3] = temp_arr2[3];
+		mouseCordIncludingLock.x = temp_mouse_x2;
+		mouseCordIncludingLock.y = temp_mouse_y2;
+    } else if (oldType == 'D') {
+        unsigned long long temp_arr[4], temp_mouse_x, temp_mouse_y;
+        double temp_arr2[4], temp_mouse_x2, temp_mouse_y2;
+        std::cin >> temp_arr[0] >> temp_arr[1] >> temp_arr[2] >> temp_arr[3] >> temp_mouse_x >> temp_mouse_y;
+        
+        temp_arr2[0] = *((big_float*)&temp_arr[0]);
+        temp_arr2[1] = *((big_float*)&temp_arr[1]);
+        temp_arr2[2] = *((big_float*)&temp_arr[2]);
+        temp_arr2[3] = *((big_float*)&temp_arr[3]);
+        temp_mouse_x2 = *((big_float*)&temp_mouse_x);
+        temp_mouse_y2 = *((big_float*)&temp_mouse_y);
+
+        windowSize[0] = temp_arr2[0];
+		windowSize[1] = temp_arr2[1];
+		windowSize[2] = temp_arr2[2];
+        windowSize[3] = temp_arr2[3];
+		mouseCordIncludingLock.x = temp_mouse_x2;
+        mouseCordIncludingLock.y = temp_mouse_y2;
+    }                              
 }
 
 cord convertToWindowCord(cord mouseCord) {
@@ -238,16 +324,15 @@ int main()
 
         glUseProgram(shaderProgram);
 
-        static cord mouseCord;
         if(!mousePosLocked) 
-			mouseCord = getMousePos();
+			mouseCordIncludingLock = getMousePos();
         
 
         #ifdef USE_FLOAT
-            glUniform2f(mouseLocation, mouseCord.x, mouseCord.y);
+            glUniform2f(mouseLocation, mouseCordIncludingLock.x, mouseCordIncludingLock.y);
             glUniform4fv(windowSizeLocation, 1, windowSize);
         #elif defined USE_DOUBLE
-			glUniform2d(mouseLocation, mouseCord.x, mouseCord.y);
+			glUniform2d(mouseLocation, mouseCordIncludingLock.x, mouseCordIncludingLock.y);
 			glUniform4dv(windowSizeLocation, 1, windowSize);
         #endif
         glUniform1f(timeLocation, currentTime);
