@@ -131,8 +131,8 @@
     <ClCompile Include="goodsights.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fragmentShaderDouble.h" />
-    <ClInclude Include="fragmentShaderFloat.h" />
+    <ClInclude Include="complexMathFunctions.h" />
+    <ClInclude Include="fragmentShader.h" />
     <ClInclude Include="inits.h" />
     <ClInclude Include="SETTINGS.h" />
     <ClInclude Include="vertexShader.h" />

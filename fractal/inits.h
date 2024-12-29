@@ -1,11 +1,7 @@
 #pragma once
 #include "vertexShader.h"
 #include "SETTINGS.h"
-#ifdef USE_FLOAT
-#include "fragmentShaderFloat.h";
-#elif defined USE_DOUBLE
-#include "fragmentShaderDouble.h";
-#endif
+#include "fragmentShader.h";
 
 
 
@@ -85,11 +81,7 @@ void doStaff() {
     // b. Fragment Shader
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-#ifdef USE_FLOAT
-    glShaderSource(fragmentShader, 1, &fragmentShaderSourceFloat, NULL);
-#elif defined USE_DOUBLE
-    glShaderSource(fragmentShader, 1, &fragmentShaderSourceDouble, NULL);
-#endif
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 
     glCompileShader(fragmentShader);
 
