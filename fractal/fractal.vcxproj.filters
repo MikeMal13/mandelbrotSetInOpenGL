@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\mathSupport">
+      <UniqueIdentifier>{3df8c649-4427-4fe8-8c46-4184dcac3021}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -35,8 +38,14 @@
     <ClInclude Include="SETTINGS.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="complexMathFunctions.h">
+    <ClInclude Include="windowScaling.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="complexMathFunctions.h">
+      <Filter>Header Files\mathSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="doubleSupport.h">
+      <Filter>Header Files\mathSupport</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

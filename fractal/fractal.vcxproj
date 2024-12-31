@@ -132,10 +132,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="complexMathFunctions.h" />
+    <ClInclude Include="doubleSupport.h" />
     <ClInclude Include="fragmentShader.h" />
     <ClInclude Include="inits.h" />
     <ClInclude Include="SETTINGS.h" />
     <ClInclude Include="vertexShader.h" />
+    <ClInclude Include="windowScaling.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -10,29 +10,11 @@
 #include "vertexShader.h"
 #include "fragmentShader.h"
 #include "SETTINGS.h"
+#include "windowScaling.h";
 
 #define min(a, b) (a < b ? a : b)
 #define max(a, b) (a > b ? a : b)
 
-#ifdef USE_FLOAT
-    typedef float big_float;
-#elif defined USE_DOUBLE
-    typedef double big_float;
-#endif
-
-struct cord {
-    big_float x;
-    big_float y;
-};
-
-big_float windowSize[4] = WINDOW_STARTING_CORDS;
-big_float mouseWindow[4] = MOUSE_STARTING_CORDS;
-big_float currentTime;
-big_float deltaTime;
-cord mouseCordIncludingLock;
-
-
-cord getMousePos();
 void printDataToUpload();
 void inputUploadData();
 
@@ -45,75 +27,6 @@ big_float dist(cord a, cord b) {
 }
 
 
-// mul is portsion of the window size moved every second
-void shiftWindowX(big_float mul) {
-    big_float range_x = windowSize[3] - windowSize[2];
-    mul *= range_x * deltaTime;
-    windowSize[0] += mul;
-    windowSize[1] += mul;
-}
-
-// mul is portsion of the window size moved every second
-void shiftWindowY(big_float mul) {
-    big_float range_y = windowSize[1] - windowSize[0];
-    mul *= range_y * deltaTime;
-    windowSize[2] += mul;
-    windowSize[3] += mul;
-}
-
-void scaleX(big_float mul) {
-    big_float range_x = windowSize[3] - windowSize[2];
-    big_float newRange = range_x * mul;
-    big_float dx = (range_x - newRange) / 2;
-    windowSize[3] -= dx;
-    windowSize[2] += dx;
-}
-
-// mul is multiplier of the window size every second
-void scaleY(big_float mul) {
-	big_float range_y = windowSize[1] - windowSize[0];
-    big_float newRange = range_y * mul;
-	big_float dy = (range_y-newRange)/2;
-	windowSize[1] -= dy;
-	windowSize[0] += dy;
-}
-
-// mul is multiplier of the window size every second
-void zoomWindow(big_float mul) {
-    // power of deltaTime to make zooming smooth
-    scaleX(pow(mul, deltaTime)); 
-    scaleY(pow(mul, deltaTime));
-}
-
-void zoomMouseWindow(big_float mul) {
-    mul = pow(mul, deltaTime);
-
-    big_float range_x = mouseWindow[1] - mouseWindow[0];
-    big_float newRange_x = range_x * mul;
-    mouseWindow[0] = mouseCordIncludingLock.x - (newRange_x / 2);
-    mouseWindow[1] = mouseCordIncludingLock.x + (newRange_x / 2);
-
-    big_float range_y = mouseWindow[3] - mouseWindow[2];
-    big_float newRange_y = range_y * mul;
-    mouseWindow[2] = mouseCordIncludingLock.y - (newRange_y / 2);
-    mouseWindow[3] = mouseCordIncludingLock.y + (newRange_y / 2);
-
-    //std::cout << "mul: " << mul << ", range_x: " << range_x << ", range_y: " << range_y << "\n";
-    printf("mouseWindow: %f, %f, %f, %f\n", mouseWindow[0], mouseWindow[1], mouseWindow[2], mouseWindow[3]);
-}
-
-void fitWindow() {
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    std::swap(width, height);
-
-    big_float range_x = windowSize[3] - windowSize[2];
-    big_float range_y = windowSize[1] - windowSize[0];
-
-    scaleY((height * range_x) / (width * range_y));
-}
-
-bool mousePosLocked = false;
 void handleKeyPresses() {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
@@ -145,21 +58,21 @@ void handleKeyPresses() {
         zoomWindow(WINDOW_ZOOM_SPEED);
     }
 
-    //// zoom mouse window in
-    //if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    //    zoomMouseWindow(2);
-    //}
-    //
-    //// zoom mouse window in
-    //if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    //    zoomMouseWindow(0.5);
-    //}
+    // zoom mouse window in
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        zoomMouseWindow(0.2);
+    }
+    
+    // zoom mouse window out
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        zoomMouseWindow(5);
+    }
     
     //lock mouse position
     if(glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
 		mousePosLocked = true;
 	}
-
+        
 	//unlock mouse position
 	if(glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
 		mousePosLocked = false;
@@ -255,56 +168,6 @@ void inputUploadData() {
     }                              
 }
 
-cord convertToWindowCord(cord mouseCord) {
-	big_float range_x = windowSize[3] - windowSize[2];
-	big_float range_y = windowSize[1] - windowSize[0];
-
-	big_float x = windowSize[2] + range_x * mouseCord.x;
-	big_float y = windowSize[0] + range_y * mouseCord.y;
-
-	return { x, y };
-}
-
-// get called when mouse button is pressed
-cord mousePosOnClickStart;
-void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT) {
-        //if (action == GLFW_PRESS) {
-		//	mousePosOnClickStart = getMousePos();
-        //}
-        //
-        //if (action == GLFW_RELEASE) {
-        //    cord mousePosOnClickEnd = getMousePos();
-        //    if(dist(mousePosOnClickStart, mousePosOnClickEnd) < 0.05) {
-        //        return;
-		//	}
-        //
-        //    mousePosOnClickStart = convertToWindowCord(mousePosOnClickStart);
-        //    mousePosOnClickEnd = convertToWindowCord(mousePosOnClickEnd);
-        //
-        //    windowSize[0] = min(mousePosOnClickStart.y, mousePosOnClickEnd.y);
-        //    windowSize[1] = max(mousePosOnClickStart.y, mousePosOnClickEnd.y);
-        //	windowSize[2] = min(mousePosOnClickStart.x, mousePosOnClickEnd.x);
-        //    windowSize[3] = max(mousePosOnClickStart.x, mousePosOnClickEnd.x);
-        //}
-    }
-}
-
-
-double xpos, ypos;
-cord getMousePos() {
-    glfwGetCursorPos(window, &xpos, &ypos);
-
-    // Get window size
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
-
-    // Normalize cursor position
-    big_float normalizedX = xpos / width;
-    big_float normalizedY = 1.0f - (ypos / height); // Flip Y-axis
-
-    return { normalizedX, normalizedY };
-}
 
 double getElapsedTime() {
     auto currentTime = std::chrono::high_resolution_clock::now();
@@ -317,9 +180,6 @@ double getElapsedTime() {
 int main()
 {
     doStaff();
-
-    // Set the mouse button callback
-    glfwSetMouseButtonCallback(window, MouseButtonCallback);
 
     int timeLocation = glGetUniformLocation(shaderProgram, "u_time");
     int windowSizeLocation = glGetUniformLocation(shaderProgram, "u_windowSize");
@@ -335,45 +195,33 @@ int main()
     double lastTime = getElapsedTime();
     while (!glfwWindowShouldClose(window)) {
 
-
-        
         fitWindow();
         currentTime = getElapsedTime();
         deltaTime = currentTime - lastTime;
         
-
-        handleKeyPresses();
-
-
-        glUseProgram(shaderProgram);
-
-        if(!mousePosLocked) 
-			mouseCordIncludingLock = getMousePos();
-
-        // transform to fit mouse window
-        // mouseCordIncludingLock.x = mouseWindow[0] + (mouseCordIncludingLock.x * (mouseWindow[1] - mouseWindow[0]));
-        // mouseCordIncludingLock.y = mouseWindow[2] + (mouseCordIncludingLock.x * (mouseWindow[3] - mouseWindow[2]));
-        
-
-
         // print fps every second
         static double ___timeAtLastCall = -1;
         if (currentTime - ___timeAtLastCall > 1) {
             printf("fps: %f\n", 1 / deltaTime);
             ___timeAtLastCall = currentTime;
-            //printf("%f %f\n", mouseCordIncludingLock.x, mouseCordIncludingLock.y);
         }
 
+
+        handleKeyPresses();
+        cord fitMouseCord = fitCordToMouseWindow(getMousePosWithLock());
+        
+
+        glUseProgram(shaderProgram);
         #ifdef USE_FLOAT
-            glUniform2f(mouseLocation, mouseCordIncludingLock.x, mouseCordIncludingLock.y);
+            glUniform2f(mouseLocation, fitMouseCord.x, fitMouseCord.y);
             glUniform4fv(windowSizeLocation, 1, windowSize);
         #elif defined USE_DOUBLE
-			glUniform2d(mouseLocation, mouseCordIncludingLock.x, mouseCordIncludingLock.y);
+			glUniform2d(mouseLocation, fitMouseCord.x, fitMouseCord.y);
 			glUniform4dv(windowSizeLocation, 1, windowSize);
         #endif
         glUniform1f(timeLocation, currentTime);
 
-
+        
         // Rendering commands here
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Clear with dark gray color
         glClear(GL_COLOR_BUFFER_BIT);

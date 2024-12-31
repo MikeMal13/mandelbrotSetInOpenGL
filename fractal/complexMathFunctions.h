@@ -1,13 +1,18 @@
 #pragma once
+#include "doubleSupport.h"
+
 
 //sin(z) = (e^(iz) - e^(-iz))/2i
 
 #define COMPLEX_MATH_FUNCTION_SIGNITRE R"(
 	complex _add(complex a, complex b);
+	complex _add(complex a, calc_type b);
+	complex _sub(complex a, complex b);
+	complex _sub(complex a, calc_type b);
+	complex _sub(calc_type a, complex b);
 	complex _mul(complex a, complex b);
     complex _mul(complex a, calc_type b);
 	complex _muli(complex z);
-	complex _sub(complex a, complex b);
 	float _abs(complex a);
     complex _pow(complex a, int n);
 	complex _exp(complex a);
@@ -15,12 +20,34 @@
 	complex _div(complex x, complex y);
 	complex _div(complex z, calc_type a);
 	complex _sin(complex z);
+	complex _cos(complex z);
+
+	#define PI 3.14159265359
 )"
 
-#define COMPLEX_MATH_FUNCTION_ALL R"(
+#define COMPLEX_MATH_FUNCTION_ALL DOUBLE_SUPPORT R"(
+	float _exp(float a){
+		return exp(a);
+	}
 
 	complex _add(complex a, complex b) {
 		return complex(a.real + b.real, a.imag + b.imag);
+	}
+
+	complex _add(complex a, calc_type b) {
+		return complex(a.real + b, a.imag + b);
+	}
+
+	complex _sub(complex a, complex b) {
+		return complex(a.real - b.real, a.imag - b.imag);
+	}
+
+	complex _sub(complex a, calc_type b) {
+		return complex(a.real - b, a.imag - b);
+	}
+
+	complex _sub(calc_type a, complex b) {
+		return complex(a - b.real, a - b.imag);
 	}
 
 	complex _mul(complex a, complex b) {
@@ -34,10 +61,6 @@
 	// z*i
 	complex _muli(complex z) {
 		return complex(-z.imag, z.real);
-	}
-
-	complex _sub(complex a, complex b) {
-		return complex(a.real - b.real, a.imag - b.imag);
 	}
 
 	complex _div(complex z, calc_type a){
@@ -73,7 +96,7 @@
 	
 	// e^(a+bi) = e^a * e^bi 
 	complex _exp(complex a){
-		return _mul(_imagExp(a.imag), exp(a.real));
+		return _mul(_imagExp(a.imag), _exp(a.real));
 	}
 	
 	// e^iz = cos(z) + i*sin(z)
@@ -87,4 +110,15 @@
 		// (a + bi)/2i = (b-ia)/2
 		return _div(complex(top.imag, -top.real), 2);
 	}
+
+	// cos(z) != sin(z + pi/2)
+	// cos(z) = (e^(iz) + e^(-iz))/2 
+	complex _cos(complex z){
+		complex top = _add(_exp(_muli(z)), _exp(_muli(_neg(z))));
+		return _div(top, 2);
+	}
 )"
+
+
+
+

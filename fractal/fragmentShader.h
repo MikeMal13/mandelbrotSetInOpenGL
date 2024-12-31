@@ -24,7 +24,6 @@ R"(
 	};
 
     in vec2 fragPos; // Received from vertex shader
-
     out vec4 FragColor;
 
     uniform float u_time; // Elapsed time in seconds
@@ -64,7 +63,7 @@ R"(
 		}
         steps = n;
         if(steps >= MAX_ITER)
-           steps = 0;
+           steps = -1;
         return _abs(z) / (MAX_DIST*MAX_DIST);
 
     }
@@ -76,7 +75,12 @@ R"(
     }
     
     vec3 calc(calc_type x, calc_type y, calc_type t) {
-        
+
+    )" 
+#ifdef FLIP_Y
+    R"(	y = 1-y; )"
+#endif
+    R"(
         mouseX = u_cursorPos.x;
         mouseY = u_cursorPos.y;
 
@@ -91,7 +95,7 @@ R"(
         set_c_and_z(x, y);  
         )" COLORING_SELECTED R"( 
         
-        return vec3(red, 0, blue);
+        return ret;
     }
 
     void main()

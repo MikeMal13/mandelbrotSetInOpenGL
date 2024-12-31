@@ -4,6 +4,25 @@
 #include "fragmentShader.h";
 
 
+#ifdef USE_FLOAT
+typedef float big_float;
+#elif defined USE_DOUBLE
+typedef double big_float;
+#endif
+
+struct cord {
+    big_float x;
+    big_float y;
+};
+
+big_float windowSize[4] = WINDOW_STARTING_CORDS;
+big_float mouseWindow[4] = MOUSE_STARTING_CORDS;
+big_float currentTime;
+big_float deltaTime;
+cord mouseCordIncludingLock;
+bool mousePosLocked = false;
+
+
 
 
 
