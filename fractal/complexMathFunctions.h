@@ -15,6 +15,8 @@
 	complex _muli(complex z);
 	float _abs(complex a);
     complex _pow(complex a, int n);
+	complex _pow(complex a, complex b);
+	complex _pow(complex a, calc_type b);
 	complex _exp(complex a);
 	complex _imagExp(calc_type b);
 	complex _div(complex x, complex y);
@@ -93,6 +95,37 @@
 		}
 		return res;
 	}
+
+	
+	// (a+bi)^(c+di)
+	complex _pow(complex a, complex b) {
+		if(a.real == 0 && a.imag == 0){
+			return complex(0, 0);
+		}
+
+		// convert to polar form
+		calc_type r = _abs(a);
+		calc_type theta = atan(a.imag / a.real);
+			
+		complex left = _mul(b, log(r));
+		complex right = complex(-b.imag*theta, b.real*theta); // b*i*theta
+		return _exp(_add(left, right));
+	}
+
+	// (a+bi)^(c)
+	// same as last but d is 0
+	complex _pow(complex a, calc_type b) {
+		if(a.real == 0 && a.imag == 0){
+			return complex(0, 0);
+		}
+	
+		// convert to polar form
+		calc_type r = _abs(a);
+		calc_type theta = atan(a.imag / a.real);
+		return _exp(complex(b * log(r), b*theta));
+	}
+
+	
 	
 	// e^(a+bi) = e^a * e^bi 
 	complex _exp(complex a){

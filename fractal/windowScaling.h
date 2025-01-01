@@ -34,7 +34,6 @@ void shiftWindowY(big_float mul) {
     mul *= -1;
 #endif
 
-
     big_float range_y = windowSize[1] - windowSize[0];
     mul *= range_y * deltaTime;
     windowSize[2] += mul;

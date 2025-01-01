@@ -34,11 +34,11 @@ R"(
     
     )" COMPLEX_MATH_FUNCTION_SIGNITRE R"(
 
-
-    complex c, z;
+    // w is only used some of the time
+    complex c, z, w, w2, w3; 
     calc_type minX, maxX, minY, maxY;
     calc_type mouseX, mouseY;
-
+    complex mouse;
 
 
     // All of the math functions for complex numbers
@@ -48,17 +48,21 @@ R"(
     // the pre defined function is: 
     // complex next(complex c, complex z);
     // it calculates the next number f(z) -> z
-    )"  FORMULA  R"(
-    
+	void next(){
+        )"  FORMULA  R"(
+    }
+
+
+
     #define MAX_DIST )" MAX_DIST R"(
     #define MAX_ITER )" MAX_ITER R"(
-
+    bool outOfBounds(){ )" ESCAPE_FUNCTION R"( }
     int steps = -1;
     float mandelbrot(complex c, complex z, int maxIter) {
 		int n = 0;
         complex boundery = complex(MAX_DIST, MAX_DIST);
-		while (n < maxIter && _abs(z) < MAX_DIST) {
-			z = next(c, z);
+		while (n < maxIter && !outOfBounds()) {
+			next();
             n++;
 		}
         steps = n;
@@ -91,8 +95,10 @@ R"(
 
         x = minX + (x*(maxX - minX));
         y = minY + (y*(maxY - minY));        
-        
+    
+        mouse = complex((mouseX-0.5)*2, (mouseY-0.5)*2);
         set_c_and_z(x, y);  
+        
         )" COLORING_SELECTED R"( 
         
         return ret;

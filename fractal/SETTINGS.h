@@ -1,6 +1,6 @@
 #pragma once
 
-#define FORMULA FORMULA_BURNING_SHIP
+#define FORMULA FORMULA_REGULAR
 #define SET_TYPE SET_MANDELBROT
 #define COLORING_SELECTED COLORING_STRIPS_AND_EDGES	
 
@@ -20,40 +20,27 @@
 #define WINDOW_STARTING_CORDS { -2.0, 2.0, -2.0, 2.0 }
 #define MOUSE_STARTING_CORDS { -1.0, 1.0, -1.0, 1.0 }
 
+// w is the third parameter 
+#define SET_MANDELBROT R"(c = complex(x, y); z = complex(x, y);)"
+#define SET_JULIA R"(c = mouse; z = complex(x, y);)"
+#define SET_THREE_PARAM_SET R"(c = complex(x, y); z = complex(0, 0); w = complex(2, 0);)"
+
 // for burning ship
-#define FLIP_Y
-
-
-#define SET_MANDELBROT R"(c = complex(x, y); z = complex(0, 0);)"
-#define SET_JULIA R"(c = complex((mouseX-0.5)*2, (mouseY-0.5)*2); z = complex(x, y);)"
+// #define FLIP_Y
 
 
 #define FORMULA_TEST R"(
-	complex next(complex c, complex z){
-		return _add(c, z);
-	}
+	z = _add(_pow(z, mouse), c);
 )"
-
-#define FORMULA_REGULAR R"(    
-complex next(complex c, complex z){
-	return _add(_mul(z, z), c);
-})"
-
-#define FORMULA_BURNING_SHIP R"(
-complex next(complex c, complex z){
-	return _add(c, _pow(complex(abs(z.real), abs(z.imag)), 2));
-})"
-
-#define FORMULA_WATER_DROP R"(    
-complex next(complex c, complex z){
-	return _div(_exp(z), c);
-})"
+#define FORMULA_REGULAR R"( z = _add(_mul(z, z), c); )"
+#define FORMULA_BURNING_SHIP R"( z = _add(c, _pow(complex(abs(z.real), abs(z.imag)), 2)); )"
+#define FORMULA_WATER_DROP R"( z = _div(_exp(z), c); )"
 
 
 // DO NOT REMOVE 0*mandelbrot(c, z, MAX_ITER);
 // it effects static variables (like steps)
 #define COLORING_EDGES	R"(
-float value = 0*mandelbrot(c, z, MAX_ITER);	
+float value = mandelbrot(c, z, MAX_ITER);	
 vec3 ret = vec3(
 	float(steps)/100, 
 	0, 
@@ -83,4 +70,14 @@ if(steps == -1)
 	ret = vec3(1, 1, 1);
 else
 	ret = vec3(0, 0, 0);
+)"
+
+
+
+
+
+// souldn't be changed
+#define ESCAPE_FUNCTION R"(
+	//return abs(z.real) > MAX_DIST || abs(z.imag) > MAX_DIST;
+	return _abs(_pow(z, complex(1, 1))) > 3.0;
 )"
